@@ -11,10 +11,11 @@
     </parent>
     -->
 
+    <!-- see https://issues.jenkins-ci.org/browse/JENKINS-21977 -->
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.567</version>
+        <version>1.579</version>
     </parent>
 
     <artifactId>slack</artifactId>
