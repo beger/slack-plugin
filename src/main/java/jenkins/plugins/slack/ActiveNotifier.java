@@ -10,13 +10,16 @@ import hudson.model.CauseAction;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.plugins.mercurial.MercurialSCM;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.AffectedFile;
 import hudson.scm.ChangeLogSet.Entry;
+import hudson.scm.SCM;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.triggers.SCMTrigger;
 import hudson.util.LogTaskListener;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.multiplescms.MultiSCM;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -315,6 +318,18 @@ public class ActiveNotifier implements FineGrainedNotifier {
 
         private MessageBuilder startMessage() {
             message.append(this.escape(build.getProject().getFullDisplayName()));
+            SCM scm = build.getProject().getScm();
+            if(scm != null && scm instanceof MercurialSCM) {
+                message.append(" (Branch: " + ((MercurialSCM)scm).getRevision() + ")");
+            } else if(scm != null && scm instanceof MultiSCM) {
+                List<SCM> scms = ((MultiSCM) scm).getConfiguredSCMs();
+                if (!scms.isEmpty()) {
+                    SCM lastScm = scms.get(scms.size() - 1);
+                    if (lastScm != null && lastScm instanceof MercurialSCM) {
+                        message.append(" (Branch: " + ((MercurialSCM) lastScm).getRevision() + ")");
+                    }
+                }
+            }
             message.append(" - ");
             message.append(this.escape(build.getDisplayName()));
             message.append(" ");
